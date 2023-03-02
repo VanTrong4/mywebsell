@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import Cart from "./components/cart/Cart";
 import Home from "./components/home/Home";
-import PageLogin from "./components/loginRegister/PageLogin";
+import PageLogin from "./components/loginRegister/Page";
 import reportWebVitals from "./reportWebVitals";
 import "react-loading-skeleton/dist/skeleton.css";
 import Index from "./components/account/Index";

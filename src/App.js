@@ -1,6 +1,7 @@
 import Footer from "./components/footer/Footer";
 import Sidebar from "./components/header/Sidebar";
 import { ToastContainer } from "react-toastify";
+import "./app.css";
 
 function App({ children }) {
   return (
