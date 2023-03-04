@@ -1,6 +1,6 @@
 # Introduce
 
-This is a ecommerce Website project with Reactjs use redux-toolkit
+This is a ecommerce Website project with Reactjs use redux-toolkit, redux thunk to work with Api
 Backend : framework laravel
 
 - Install Backend to use this app:
