@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { addToCart, updateLocal } from "../../redux/sliceCart";
+import { addToCart, updateLocal } from "../../features/cart/cartSlice";
 import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
@@ -22,7 +22,7 @@ const ProductDetail = () => {
       .then((res) => {
         setBrand(res.data.brand);
       });
-  }, []);
+  }, [idProduct]);
 
   const add = (product) => {
     dispatch(addToCart(product));

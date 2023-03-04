@@ -1,11 +1,22 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useOutletContext } from "react-router-dom";
+import { createProduct } from "../../features/editUser.js/editUserAction";
 
 const CreateProduct = () => {
   const [brand, setBrand] = useState([]);
   const [category, setCategory] = useState([]);
   const [image, setImage] = useState([]);
   const [sale, setSale] = useState(false);
+
+  const [config] = useOutletContext();
+
+  const dispatch = useDispatch();
+
+  const { loading, error, success, type } = useSelector(
+    (state) => state.editUser
+  );
 
   useEffect(() => {
     axios
@@ -25,25 +36,7 @@ const CreateProduct = () => {
     image.map((value) => {
       return formdata.append("file[]", value);
     });
-
-    const token = JSON.parse(localStorage.getItem("token"));
-    let config = {
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
-      },
-    };
-    axios
-      .post(
-        "http://localhost/laravel/laravel/public/api/user/add-product",
-        formdata,
-        config
-      )
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => console.log(err));
+    dispatch(createProduct({ formdata, config }));
   };
 
   const handleFile = (e) => {
@@ -153,8 +146,20 @@ const CreateProduct = () => {
             name="detail"
             placeholder="Detail"
           ></textarea>
+          {type === "create" && success && !error ? (
+            <p className="registerSuccess">Create Success</p>
+          ) : (
+            error && <p className="errorSV">{error}</p>
+          )}
           <button type="submit" className="btn btn-default">
-            Signup
+            {type === "create" && loading ? (
+              <i
+                className="fa fa-spinner fa-spin"
+                style={{ fontSize: "30px", color: "#fe980f" }}
+              ></i>
+            ) : (
+              "Create"
+            )}
           </button>
         </form>
       </div>

@@ -1,17 +1,19 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   decreaseCart,
   deleteCart,
   increaseCart,
   updateLocal,
-} from "../../redux/sliceCart";
+} from "../../features/cart/cartSlice";
 import { toast } from "react-toastify";
 import SkeletonCart from "./SkeletonCart";
 
 const ListCart = ({ products, loading, listQty }) => {
   const dispatch = useDispatch();
+
+  const { userInfor } = useSelector((state) => state.auth);
 
   const deleteProduct = (product) => {
     dispatch(deleteCart(product));
@@ -72,15 +74,10 @@ const ListCart = ({ products, loading, listQty }) => {
             </thead>
             <tbody>
               {loading
-                ? // <Skeleton
-                  //   wrapper={SkeletonCart}
-                  //   containerClassName={"Width100"}
-                  //   count={listQty && Object.keys(JSON.parse(listQty)).length}
-                  // />
-                  listQty &&
-                  Object.keys(JSON.parse(listQty)).map((val, i) => (
-                    <SkeletonCart key={i} />
-                  ))
+                ? listQty &&
+                  Object.keys(JSON.parse(listQty)[userInfor.id]).map(
+                    (val, i) => <SkeletonCart key={i} />
+                  )
                 : products.map((val) => {
                     return (
                       <tr key={val.id}>

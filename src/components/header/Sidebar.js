@@ -1,21 +1,35 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { logoutUser } from "../../features/auth/authSlice";
+import { fetchCart } from "../../features/cart/cartActions";
 
 const Sidebar = () => {
-  let sumQty = 0
-  let products = useSelector((state)=> state.cart)
-  // const [check,setCheck] = useState(false)
-  let check = localStorage.getItem('auth')
-  const logout = () =>{
-    // setCheck(true)
-    localStorage.clear()
+  const dispatch = useDispatch();
+  let sumQty = 0;
+
+  let listQty = localStorage.getItem("qty")
+    ? JSON.parse(localStorage.getItem("qty"))
+    : null;
+
+  const { token, userInfor } = useSelector((state) => state.auth);
+  const { products } = useSelector((state) => state.cart);
+
+  const logout = () => {
+    dispatch(logoutUser());
+  };
+
+  useEffect(() => {
+    if (userInfor) {
+      dispatch(fetchCart({ input: listQty[userInfor.id], abc: "123" }));
     }
+  }, [userInfor]);
 
-    products.map((val)=>
-      sumQty += val.qty
-    )
-
+  if (products) {
+    products.map((val) => {
+      return (sumQty += val.qty);
+    });
+  }
   return (
     <header id="header">
       <div className="header_top">
@@ -123,13 +137,13 @@ const Sidebar = () => {
               <div className="shop-menu clearfix pull-right">
                 <ul className="nav navbar-nav">
                   <li>
-                    {!check ? (
+                    {!token ? (
                       ""
-                    ): (
+                    ) : (
                       <Link to="/account">
                         <i className="fa fa-user" /> Account
                       </Link>
-                    ) }
+                    )}
                   </li>
                   <li>
                     <Link href>
@@ -143,16 +157,18 @@ const Sidebar = () => {
                   </li>
                   <li>
                     <Link to="/cart">
-                      <i className="fa fa-shopping-cart" /> Cart {"("}{sumQty}{")"}
+                      <i className="fa fa-shopping-cart" /> Cart {"("}
+                      {sumQty}
+                      {")"}
                     </Link>
                   </li>
                   <li>
-                    {!check ? (
+                    {!token ? (
                       <Link to="/login">
                         <i className="fa fa-lock" /> Login
                       </Link>
                     ) : (
-                      <Link to="/login" onClick={()=>logout()}>
+                      <Link to="/login" onClick={() => logout()}>
                         <i className="fa fa-lock" /> Logout
                       </Link>
                     )}
@@ -206,12 +222,12 @@ const Sidebar = () => {
                         <Link to="cart.html">Cart</Link>
                       </li>
                       <li>
-                        {!check ? (
+                        {!token ? (
                           <Link to="/login">
                             <i className="fa fa-lock" /> Login
                           </Link>
                         ) : (
-                          <Link to="/login">
+                          <Link to="/login" onClick={() => logout()}>
                             <i className="fa fa-lock" /> Logout
                           </Link>
                         )}

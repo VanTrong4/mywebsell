@@ -8,7 +8,7 @@ import PageLogin from "./components/loginRegister/Page";
 import reportWebVitals from "./reportWebVitals";
 import "react-loading-skeleton/dist/skeleton.css";
 import Index from "./components/account/Index";
-import { store } from "./redux/store";
+import { store } from "./app/store";
 import { Provider } from "react-redux";
 import MyProduct from "./components/account/MyProduct";
 import Account from "./components/account/Account";
@@ -17,6 +17,7 @@ import EditProduct from "./components/account/EditProduct";
 import "react-toastify/dist/ReactToastify.css";
 import ProductDetail from "./components/home/ProductDetail";
 import Product from "./components/home/Product";
+import ProtectRoute from "./components/protectRoute/ProtectRoute";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -29,13 +30,17 @@ root.render(
             <Route index element={<Product />} />
             <Route path="product-detail/:id" element={<ProductDetail />} />
           </Route>
-          <Route path="/cart" element={<Cart />} />
+          <Route element={<ProtectRoute />}>
+            <Route path="/cart" element={<Cart />} />
+          </Route>
           <Route path="/login" element={<PageLogin />} />
-          <Route path="/account" element={<Index />}>
-            <Route index element={<Account />} />
-            <Route path="myProduct" element={<MyProduct />} />
-            <Route path="editProduct/:id" element={<EditProduct />} />
-            <Route path="createProduct" element={<CreateProduct />} />
+          <Route element={<ProtectRoute />}>
+            <Route path="/account" element={<Index />}>
+              <Route index element={<Account />} />
+              <Route path="myProduct" element={<MyProduct />} />
+              <Route path="editProduct/:id" element={<EditProduct />} />
+              <Route path="createProduct" element={<CreateProduct />} />
+            </Route>
           </Route>
         </Routes>
       </App>

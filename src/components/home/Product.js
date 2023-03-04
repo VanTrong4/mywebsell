@@ -1,7 +1,7 @@
 import { Link, useOutletContext } from "react-router-dom";
 import React from "react";
-import { useDispatch } from "react-redux";
-import { addToCart, updateLocal } from "../../redux/sliceCart";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, updateLocal } from "../../features/cart/cartSlice";
 import SkeletonProduct from "./SkeletonProduct";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
@@ -9,20 +9,23 @@ import { toast } from "react-toastify";
 const Product = () => {
   const dispatch = useDispatch();
   let [products, loading] = useOutletContext();
+  const { userInfor } = useSelector((state) => state.auth);
 
   const add = (product) => {
-    dispatch(addToCart(product));
-    dispatch(updateLocal());
-    toast.success("Add to cart", {
-      position: "bottom-left",
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: "",
-      theme: "light",
-    });
+    if (userInfor) {
+      dispatch(addToCart(product));
+      dispatch(updateLocal());
+      toast.success("Add to cart", {
+        position: "bottom-left",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: "",
+        theme: "light",
+      });
+    }
   };
 
   return loading ? (

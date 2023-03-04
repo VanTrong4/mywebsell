@@ -1,13 +1,32 @@
-import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../../../features/auth/authActions";
 import { arrRegister } from "../arrayForm";
 import InputRegister from "./InputRegister";
 
 const Register = () => {
-  const [data, setData] = useState({ level: 0 });
-  const [success, setSuccess] = useState(false);
-  const [errorSv, setErrorSv] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({
+    level: 0,
+    name: "",
+    email: "",
+    password: "",
+    address: "",
+    phone: "",
+  });
+
+  const { loading, success, error, type } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setData({
+      level: 0,
+      name: "",
+      email: "",
+      password: "",
+      address: "",
+      phone: "",
+    });
+  }, [success]);
 
   const changeInput = (e) => {
     let nameInput = e.target.name;
@@ -16,22 +35,9 @@ const Register = () => {
 
   const register = (e) => {
     e.preventDefault();
-    setLoading(true);
-    axios
-      .post("http://localhost/laravel/laravel/public/api/register", data)
-      .then((res) => {
-        if (res.data.errors) {
-          setErrorSv(res.data.errors.email[0]);
-          setSuccess(false);
-        } else {
-          console.log(res);
-          setErrorSv("");
-          setSuccess(true);
-          console.log("succes");
-        }
-        setLoading(false);
-      });
+    dispatch(registerUser(data));
   };
+
   return (
     <div>
       <div className="signup-form">
@@ -42,20 +48,27 @@ const Register = () => {
               <InputRegister
                 key={val.id}
                 list={val}
+                data={data}
                 changeInput={changeInput}
+                success={success}
               />
             );
           })}
-          {errorSv && <p className="errorSV">{errorSv}</p>}
-          {loading && (
-            <i
-              className="fa fa-spinner fa-spin"
-              style={{ fontSize: "30px", color: "#fe980f" }}
-            ></i>
+          {type === "register" && error && (
+            <p className="errorSV">{error.toString()}</p>
           )}
-          {success && <p className="registerSuccess">Đăng ký thành công</p>}
+          {type === "register" && success && !error && (
+            <p className="registerSuccess">Đăng ký thành công</p>
+          )}
           <button type="submit" className="btn btn-default">
-            Signup
+            {type === "register" && loading ? (
+              <i
+                className="fa fa-spinner fa-spin"
+                style={{ fontSize: "30px", color: "#fe980f" }}
+              ></i>
+            ) : (
+              "Sign up"
+            )}
           </button>
         </form>
       </div>

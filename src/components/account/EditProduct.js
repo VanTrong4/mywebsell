@@ -12,7 +12,7 @@ const EditProduct = () => {
 
   let { id } = useParams();
 
-  let [auth, config] = useOutletContext();
+  let [config, userInfor] = useOutletContext();
 
   useEffect(() => {
     axios
@@ -140,7 +140,7 @@ const EditProduct = () => {
                         width={50}
                         src={
                           "http://localhost/laravel/laravel/public/upload/user/product/" +
-                          auth.id +
+                          userInfor.id +
                           "/" +
                           val
                         }

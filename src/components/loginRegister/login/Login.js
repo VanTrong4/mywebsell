@@ -1,15 +1,24 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { arrLogin } from "../arrayForm";
 import InputLogin from "./InputLogin";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../../features/auth/authActions";
 
 const Login = () => {
   const [input, setInput] = useState({ level: 0 });
-  const [errorSv, setErrorSv] = useState("");
-  const [loading, setLoading] = useState("");
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, userInfor, type } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (userInfor) {
+      navigate("/");
+    }
+  }, [userInfor]);
 
   const changeInput = (e) => {
     let name = e.target.name;
@@ -18,20 +27,7 @@ const Login = () => {
 
   const login = (e) => {
     e.preventDefault();
-    setLoading(true);
-    axios
-      .post("http://localhost/laravel/laravel/public/api/login", input)
-      .then((res) => {
-        if (res.data.errors) {
-          setErrorSv(res.data.errors.errors);
-          console.log(res);
-        } else {
-          localStorage.setItem("token", JSON.stringify(res.data.success.token));
-          localStorage.setItem("auth", JSON.stringify(res.data.Auth));
-          navigate("/");
-        }
-        setLoading(false);
-      });
+    dispatch(loginUser(input));
   };
 
   return (
@@ -43,15 +39,16 @@ const Login = () => {
             <InputLogin key={val.id} list={val} changeInput={changeInput} />
           );
         })}
-        {errorSv && <p className="errorSV">{errorSv}</p>}
-        {loading && (
-          <i
-            className="fa fa-spinner fa-spin"
-            style={{ fontSize: "30px", color: "#fe980f" }}
-          ></i>
-        )}
+        {type === "login" && error && <p className="errorSV">{error}</p>}
         <button type="submit" className="btn btn-default">
-          Login
+          {loading && type === "login" ? (
+            <i
+              className="fa fa-spinner fa-spin"
+              style={{ fontSize: "30px", color: "#fe980f" }}
+            ></i>
+          ) : (
+            "Login"
+          )}
         </button>
       </form>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-const InputRegister = ({ list, changeInput }) => {
-  const { error, id, ...attr } = list;
+const InputRegister = ({ list, changeInput, data, success }) => {
+  const { error, id, name, ...attr } = list;
   const [focused, setFocused] = useState(false);
   const changefocus = () => {
     setFocused(true);
@@ -12,8 +12,10 @@ const InputRegister = ({ list, changeInput }) => {
         {...attr}
         onChange={changeInput}
         id={id}
+        name={name}
+        value={data[Object.keys(data).find((val) => val === name)]}
         onBlur={changefocus}
-        focused={focused.toString()}
+        focused={success ? false : focused.toString()}
       />
       <p className="errorInput">{error}</p>
     </>

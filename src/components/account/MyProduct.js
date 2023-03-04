@@ -1,32 +1,27 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import {
+  deleteProduct,
+  getMyProduct,
+} from "../../features/editUser.js/editUserAction";
 
 const MyProduct = () => {
-  const [products, setProducts] = useState({});
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [index, setIndex] = useState(null);
 
-  const [auth, config] = useOutletContext();
+  const [config, userInfor] = useOutletContext();
+  const { products, loading, type } = useSelector((state) => state.editUser);
 
   useEffect(() => {
-    axios
-      .get(
-        "http://localhost/laravel/laravel/public/api/user/my-product",
-        config
-      )
-      .then((res) => {
-        setProducts(res.data.data);
-      });
+    dispatch(getMyProduct(config));
   }, [config]);
 
-  const deleteProduct = (id) => {
-    axios
-      .get(
-        "http://localhost/laravel/laravel/public/api/user/delete-product/" + id,
-        config
-      )
-      .then((res) => {
-        setProducts(res.data.data);
-      });
+  const onDeleteProduct = (id) => {
+    dispatch(deleteProduct({ id, config }));
+    setIndex(id);
   };
 
   return (
@@ -44,58 +39,83 @@ const MyProduct = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.values(products).map((val) => {
-                return (
-                  <tr key={val.id}>
-                    <td className="product_id">
-                      <h4>{val.id}</h4>
-                    </td>
-                    <td className="product_name">
-                      <h4>{val.name}</h4>
-                    </td>
-                    <td className="product_image">
-                      {JSON.parse(val.image).map((imge, index) => {
-                        return (
-                          <img
-                            key={index}
-                            height="50"
-                            width={50}
-                            style={{ marginRight: "5px" }}
-                            alt=""
-                            src={
-                              "http://localhost/laravel/laravel/public/upload/user/product/" +
-                              auth.id +
-                              "/" +
-                              imge
-                            }
-                          />
-                        );
-                      })}
-                    </td>
-                    <td className="product_price">
-                      <h4>${val.price}</h4>
-                    </td>
-                    <td className="product_action">
-                      <h4>
-                        <Link to={"/account/editProduct/" + val.id}>
-                          <i className="fa fa-edit"></i>
-                        </Link>
-                        <Link
-                          to=""
-                          style={{ marginLeft: "30px" }}
-                          onClick={() => deleteProduct(val.id)}
-                        >
-                          <i className="fa fa-times"></i>
-                        </Link>
-                      </h4>
-                    </td>
-                  </tr>
-                );
-              })}
+              {type === "getProduct" && loading ? (
+                <tr>
+                  <td>
+                    <i
+                      className="fa fa-spinner fa-spin"
+                      style={{ fontSize: "30px", color: "#fe980f" }}
+                    ></i>
+                  </td>
+                </tr>
+              ) : (
+                Object.values(products).map((val) => {
+                  return (
+                    <tr key={val.id}>
+                      <td className="product_id">
+                        <h4>{val.id}</h4>
+                      </td>
+                      <td className="product_name">
+                        <h4>{val.name}</h4>
+                      </td>
+                      <td className="product_image">
+                        {JSON.parse(val.image).map((imge, index) => {
+                          return (
+                            <img
+                              key={index}
+                              height="50"
+                              width={50}
+                              style={{ marginRight: "5px" }}
+                              alt=""
+                              src={
+                                "http://localhost/laravel/laravel/public/upload/user/product/" +
+                                userInfor.id +
+                                "/" +
+                                imge
+                              }
+                            />
+                          );
+                        })}
+                      </td>
+                      <td className="product_price">
+                        <h4>${val.price}</h4>
+                      </td>
+                      <td className="product_action">
+                        <h4>
+                          <Link to={"/account/editProduct/" + val.id}>
+                            <i className="fa fa-edit"></i>
+                          </Link>
+                          <Link
+                            to=""
+                            style={{ marginLeft: "30px" }}
+                            onClick={() => onDeleteProduct(val.id)}
+                          >
+                            {index === val.id &&
+                            type === "deleteProduct" &&
+                            loading ? (
+                              <i
+                                className="fa fa-spinner fa-spin"
+                                style={{ fontSize: "30px", color: "#fe980f" }}
+                              ></i>
+                            ) : (
+                              <i className="fa fa-times"></i>
+                            )}
+                          </Link>
+                        </h4>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
-        <button className="btn btn-primary">Add New</button>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/account/createProduct")}
+        >
+          Add New
+        </button>
       </section>
     </div>
   );
